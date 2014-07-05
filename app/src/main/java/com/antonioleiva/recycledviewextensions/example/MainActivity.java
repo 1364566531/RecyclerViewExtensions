@@ -8,32 +8,40 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.antonioleiva.recycledviewextensions.BaseLayoutManager;
 import com.antonioleiva.recycledviewextensions.GridLayoutManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements OrientationDialogFragment.Listener {
 
     private static final String MOCK_URL = "http://lorempixel.com/800/400/nightlife/";
+
+    private int mOrientation = BaseLayoutManager.VERTICAL;
+    private RecyclerView mRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.list);
-        recyclerView.setHasFixedSize(true);
+        mRecyclerView = (RecyclerView) findViewById(R.id.list);
+        mRecyclerView.setHasFixedSize(true);
         final MyRecyclerAdapter adapter;
-        recyclerView.setAdapter(adapter = new MyRecyclerAdapter(createMockList(), R.layout.item));
-        recyclerView.setLayoutManager(new GridLayoutManager(this));
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerView.setAdapter(adapter = new MyRecyclerAdapter(createMockList(), R.layout.item));
+        updateLayoutManager();
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         adapter.setOnItemClickListener(new OnRecyclerViewItemClickListener<ViewModel>() {
             @Override public void onItemClick(View view, ViewModel viewModel) {
                 adapter.remove(viewModel);
             }
         });
+    }
+
+    private void updateLayoutManager() {
+        mRecyclerView.setLayoutManager(new GridLayoutManager(this, GridLayoutManager.DEFAULT_COLUMNS, mOrientation));
     }
 
     private List<ViewModel> createMockList() {
@@ -47,20 +55,30 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_orientation) {
+            showOrientationDialog();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showOrientationDialog() {
+        OrientationDialogFragment dlg = OrientationDialogFragment.newInstance(mOrientation);
+        dlg.show(getFragmentManager(), "orientationDlg");
+    }
+
+    @Override
+    public void onNewOrientationSelected(int orientation) {
+        if (orientation != mOrientation) {
+            mOrientation = orientation;
+            updateLayoutManager();
+        }
     }
 }

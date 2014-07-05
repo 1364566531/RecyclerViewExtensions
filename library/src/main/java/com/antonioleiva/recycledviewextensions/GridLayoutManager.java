@@ -7,7 +7,7 @@ import android.view.View;
 
 public class GridLayoutManager extends BaseLayoutManager {
 
-    private static final int DEFAULT_COLUMNS = 2;
+    public static final int DEFAULT_COLUMNS = 2;
     private int columns;
 
     private static final String TAG = GridLayoutManager.class.getSimpleName();

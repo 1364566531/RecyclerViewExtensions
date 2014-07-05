@@ -3,6 +3,6 @@
 
     <string name="app_name">RecycledViewExtensions</string>
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_orientation">Orientation</string>
 
 </resources>
